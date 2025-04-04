@@ -1,15 +1,13 @@
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-
+import { GitHubLoginButton } from "../components/github-login/github-login-button";
 export default component$(() => {
   return (
     <>
-      <h1>Hi 👋</h1>
-      <div>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
+      <div class="text-4xl font-bold my-4">
+        Welcome to the GitHub Repo Manager
       </div>
+      <GitHubLoginButton />
     </>
   );
 });
