@@ -19,3 +19,8 @@ export type RepositoryDetails = Repository & {
   html_url: string;
   topics: string[];
 }
+
+export type RepositoryDependencies = {
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
+}

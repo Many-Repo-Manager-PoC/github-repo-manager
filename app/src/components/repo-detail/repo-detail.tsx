@@ -18,9 +18,8 @@ export interface RepoDetailProps {
 
 export const RepoDetail = component$<RepoDetailProps>(({ repoDetails }) => {
   return (
-    <div class="max-w-5xl mx-auto p-4 py-8">
+    <div class="max-w-5xl mx-auto px-4 py-8">
       <div class="rounded-3xl shadow-xl overflow-hidden">
-        {/* Header with colored background */}
         <div class="px-8 pt-8">
           <div class="flex items-center gap-4 mb-6">
             {repoDetails.owner?.avatar_url && (

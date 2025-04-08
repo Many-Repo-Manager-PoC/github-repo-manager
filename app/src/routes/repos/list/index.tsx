@@ -1,8 +1,5 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
-import type { RequestEvent } from "@builder.io/qwik-city";
-import { Octokit } from "octokit";
-import { useSession } from "~/routes/plugin@auth";
 import { getRepositories } from "~/api/repos";
 import { RepoCard } from "~/components/cards/repo-card";
 export const useUserRepositories = routeLoader$(async (requestEvent) => {

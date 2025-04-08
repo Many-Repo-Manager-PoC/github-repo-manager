@@ -132,7 +132,10 @@ export const getRepositoryDependencies = server$(
         fileData.type !== "file" ||
         !("content" in fileData)
       ) {
-        throw new Error("Not a regular file or content not available");
+        return {
+          dependencies: {},
+          devDependencies: {},
+        };
       }
 
       const content = Buffer.from(fileData.content, "base64").toString("utf-8");
@@ -151,5 +154,11 @@ export const getRepositoryDependencies = server$(
         devDependencies,
       };
     }
+    
+    // Return empty objects when no package.json is found
+    return {
+      dependencies: {},
+      devDependencies: {},
+    };
   }
 );
