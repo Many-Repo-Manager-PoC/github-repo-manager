@@ -11,12 +11,15 @@ import {
   LuLock,
   LuUnlock,
 } from "@qwikest/icons/lucide";
+import { TopicModal } from "../modals/topic-modal";
+import type { ActionStore } from "@builder.io/qwik-city";
 
 export interface RepoDetailProps {
   repoDetails: RepositoryDetails;
+  updateTopicsAction: ActionStore<{success: boolean}, {owner: string, repo: string, topics: string[]}>;
 }
 
-export const RepoDetail = component$<RepoDetailProps>(({ repoDetails }) => {
+export const RepoDetail = component$<RepoDetailProps>(({ repoDetails, updateTopicsAction }) => {
   return (
     <div class="max-w-5xl mx-auto px-4 py-8">
       <div class="rounded-3xl shadow-xl overflow-hidden">
@@ -134,10 +137,17 @@ export const RepoDetail = component$<RepoDetailProps>(({ repoDetails }) => {
           {/* Tags */}
           {repoDetails.topics && repoDetails.topics.length > 0 && (
             <div class="bg-custom-neutral-100 p-6 rounded-xl">
-              <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
-                <LuTag class="h-5 w-5 text-custom-primary-500" />
-                Topics
-              </h3>
+              <div class="flex justify-between gap-2">
+                <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+                <TopicModal 
+                  topics={repoDetails.topics} 
+                  updateTopicsAction={updateTopicsAction}
+                  owner={repoDetails.owner.login}
+                  repo={repoDetails.name}
+                />
+                </h3>
+               
+              </div>
               <div class="flex flex-wrap gap-2">
                 {repoDetails.topics.map((topic) => (
                   <div

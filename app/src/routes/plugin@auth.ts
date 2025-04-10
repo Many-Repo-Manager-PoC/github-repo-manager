@@ -10,7 +10,15 @@ declare module "@auth/qwik" {
 
 export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
   () => ({
-    providers: [GitHub],
+    providers: [
+      GitHub({
+        authorization: {
+          params: {
+            scope: 'read:user user:email repo',
+          },
+        },
+      }),
+    ],
     callbacks: {
       async jwt({ token, account }) {
         if (account) {

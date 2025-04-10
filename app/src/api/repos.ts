@@ -1,6 +1,6 @@
 import { server$ } from "@builder.io/qwik-city";
 import { Octokit } from "octokit";
-import type { RequestEventLoader } from "@builder.io/qwik-city";
+import type { RequestEventLoader, RequestEventAction } from "@builder.io/qwik-city";
 import type { Session } from "@auth/qwik";
 import { Repository, RepositoryDetails } from "./types";
 
@@ -40,7 +40,8 @@ export const getRepositories = server$(
  * Get a repository by owner and name
  */
 export const getRepositoryDetails = server$(
-  async (requestEvent: RequestEventLoader, owner: string, repo: string) => {
+  async function (requestEvent: RequestEventLoader, owner: string, repo: string) {
+
     const session: Session = requestEvent.sharedMap.get("session");
 
     if (!session) {
@@ -91,9 +92,6 @@ export const getRepositoryDetails = server$(
   }
 );
 
-/**
- * Search for specific files in a repository (like package.json)
- */
 export const getRepositoryDependencies = server$(
   async (requestEvent: RequestEventLoader, owner: string, repo: string) => {
     const session: Session = requestEvent.sharedMap.get("session");
@@ -113,8 +111,6 @@ export const getRepositoryDependencies = server$(
     const { data: searchResults } = await octokit.rest.search.code({
       q: queryString,
     });
-
-    console.log({ searchResults });
 
     // If file is found, fetch its content
     if (searchResults.total_count > 0) {
@@ -140,25 +136,47 @@ export const getRepositoryDependencies = server$(
 
       const content = Buffer.from(fileData.content, "base64").toString("utf-8");
       const parsedContent = JSON.parse(content);
-      console.log({ parsedContent });
 
       const dependencies: Record<string, string> =
         parsedContent?.dependencies ?? {};
       const devDependencies: Record<string, string> =
         parsedContent?.devDependencies ?? {};
 
-      console.log({ dependencies, devDependencies });
-
       return {
         dependencies,
         devDependencies,
       };
     }
-    
+
     // Return empty objects when no package.json is found
     return {
       dependencies: {},
       devDependencies: {},
     };
+  }
+);
+
+export const updateRepositoryTopics = server$(
+  async (
+    requestEvent: RequestEventAction,
+    owner: string,
+    repo: string,
+    topics: string[]
+  ) => {
+    const session: Session = requestEvent.sharedMap.get("session");
+
+    if (!session) {
+      throw new Error("Session not found");
+    }
+
+    const octokit = new Octokit({
+      auth: session.accessToken,
+    });
+
+    await octokit.rest.repos.replaceAllTopics({
+      owner,
+      repo,
+      names: topics,
+    });
   }
 );
