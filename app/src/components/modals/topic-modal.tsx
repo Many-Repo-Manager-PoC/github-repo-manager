@@ -42,28 +42,28 @@ export const TopicModal = component$<TopicModalProps>(
 
     return (
       <Modal.Root>
-        <Modal.Trigger class="flex items-center gap-2 px-4 py-2 bg-custom-primary-100 hover:bg-custom-primary-200 text-custom-primary-700 rounded-lg shadow-sm cursor-pointer transition-all duration-300 ease-in-out hover:shadow-md transform hover:-translate-y-0.5">
-          <LuTag class="h-5 w-5 text-custom-primary-500" />
+        <Modal.Trigger class="flex items-center gap-2 px-4 py-2 bg-purple-800 hover:bg-purple-700 text-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 ease-in-out hover:shadow-purple-500/30 hover:-translate-y-0.5">
+          <LuTag class="h-5 w-5" />
           Topics
         </Modal.Trigger>
-        <Modal.Panel class="modal-panel absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-custom-neutral-0 rounded-3xl shadow-xl p-8 max-w-md">
+        <Modal.Panel class="modal-panel absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 rounded-3xl shadow-xl p-8 max-w-md border border-gray-700">
           <div class="flex items-center justify-between mb-6">
-            <Modal.Title class="text-2xl font-bold text-custom-primary-600">
+            <Modal.Title class="text-2xl font-bold text-purple-400">
               Edit Topics
             </Modal.Title>
-            <Modal.Close class="p-2 hover:bg-custom-neutral-100 rounded-full transition-colors">
-              <LuX class="h-5 w-5 text-custom-neutral-500" />
+            <Modal.Close class="p-2 hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-white">
+              <LuX class="h-5 w-5" />
             </Modal.Close>
           </div>
 
-          <Modal.Description class="text-custom-neutral-600 mb-6">
+          <Modal.Description class="text-gray-300 mb-6">
             You can update repository topics here. Hit the save button when
             finished.
           </Modal.Description>
 
           <div class="space-y-4 mb-8">
             <Label class="block">
-              <span class="block text-custom-neutral-700 font-medium mb-2">
+              <span class="block text-gray-200 font-medium mb-2">
                 Current Topics
               </span>
               <div class="flex flex-wrap gap-2 mb-4">
@@ -75,18 +75,18 @@ export const TopicModal = component$<TopicModalProps>(
                 bind:value={topicInput}
                 type="text"
                 placeholder="Add topics (comma separated)"
-                class="w-full p-3 border border-custom-neutral-200 rounded-xl focus:ring-2 focus:ring-custom-primary-400 focus:border-custom-primary-400 outline-none transition-all"
+                class="w-full p-3 bg-gray-700 border border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all text-gray-200 placeholder-gray-500"
               />
             </Label>
           </div>
 
-          <footer class="flex justify-end gap-3 pt-4 border-t border-custom-neutral-200">
-            <Modal.Close class="transition-all duration-300 ease-in-out px-4 py-2 bg-custom-neutral-100 hover:bg-custom-neutral-200 text-custom-neutral-700 rounded-lg transition-colors cursor-pointer border border-custom-neutral-200 hover:shadow-md transform hover:-translate-y-0.5">
+          <footer class="flex justify-end gap-3 pt-4 border-t border-gray-700">
+            <Modal.Close class="transition-all duration-300 ease-in-out px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg cursor-pointer border border-gray-600 hover:shadow-lg">
               Cancel
             </Modal.Close>
             <Modal.Close
               onClick$={onSave}
-              class="transition-all duration-300 ease-in-out px-4 py-2 bg-custom-primary-600 hover:bg-custom-primary-700 text-custom-neutral-700 rounded-lg transition-colors cursor-pointer border border-custom-neutral-200 hover:shadow-md transform hover:-translate-y-0.5"
+              class="transition-all duration-300 ease-in-out px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-lg cursor-pointer hover:shadow-purple-500/30"
             >
               Save Changes
             </Modal.Close>

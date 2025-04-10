@@ -4,8 +4,8 @@ import { GitHubLoginButton } from "../components/github-login/github-login-butto
 export default component$(() => {
   return (
     <>
-      <div class="text-4xl font-bold my-4">
-        Welcome to the GitHub Repo Manager
+      <div class="text-5xl font-bold my-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+        GitHub Repo Manager
       </div>
       <GitHubLoginButton />
     </>
@@ -13,11 +13,11 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "GitHub Repo Manager",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
+      content: "Manage your GitHub repositories with ease",
     },
   ],
 };

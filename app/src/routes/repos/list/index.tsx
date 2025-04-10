@@ -9,9 +9,12 @@ export const useUserRepositories = routeLoader$(async (requestEvent) => {
 export default component$(() => {
   const userRepoSignal = useUserRepositories();
 
-
   return (
-    <div class="grid grid-cols-1 justify-center gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="w-full max-w-7xl mx-auto px-4 py-10">
+      <h1 class="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+        Your Repositories
+      </h1>
+      <div class="grid grid-cols-1 justify-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {userRepoSignal.value.repositories.map((repo) => (
           <RepoCard
             key={repo.id}
@@ -19,15 +22,16 @@ export default component$(() => {
           />
         ))}
       </div>
+    </div>
   );
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "Your Repositories | GitHub Repo Manager",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
+      content: "Manage your GitHub repositories with ease",
     },
   ],
 };

@@ -41,7 +41,11 @@ export default component$(() => {
   const updateTopicsAction = useUpdateTopics();
   
   return (
-    <div class="grid grid-cols-1 justify-center gap-5 lg:grid-cols-2">
+    <div class="w-full max-w-7xl mx-auto px-4 py-10">
+      <h1 class="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+        Repository Details
+      </h1>
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <RepoDetail 
           repoDetails={repoDetailsSignal.value.repository} 
           updateTopicsAction={updateTopicsAction}
@@ -51,5 +55,6 @@ export default component$(() => {
           devDependencies={repoDependenciesSignal.value.devDependencies} 
         />
       </div>
+    </div>
   );
 });
