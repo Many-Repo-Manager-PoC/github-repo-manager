@@ -24,7 +24,7 @@ export const RepoDependencies = component$<RepoDependenciesProps>(
       <div>
         {/* Dependencies section */}
         <div class="mb-8">
-          <Collapsible.Root>
+          <Collapsible.Root open>
             <Collapsible.Trigger class="collapsible-trigger w-full text-left flex items-center justify-between px-5 py-4 bg-gray-800/80 hover:bg-gray-800 rounded-xl mb-2 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md border border-gray-700 hover:border-purple-600/30">
               <h2 class="text-xl font-bold text-purple-400 flex items-center">
                 <span class="bg-purple-500/20 p-2 rounded-lg mr-3">
@@ -37,18 +37,18 @@ export const RepoDependencies = component$<RepoDependenciesProps>(
               </div>
             </Collapsible.Trigger>
 
-            <Collapsible.Content class="collapsible-content overflow-hidden">
-              <div class="mt-3 px-2">
+            <Collapsible.Content class="collapsible-content">
+              <div class="collapsible-inner mt-3 px-2 pb-2">
                 {Object.keys(dependencies.value).length === 0 ? (
-                  <div class="bg-gray-700/50 p-5 rounded-xl text-gray-400 border border-gray-700 text-center">
+                  <div class="bg-gray-700/50 p-5 rounded-xl text-gray-400 border border-gray-700 text-center h-[100px] flex items-center justify-center">
                     No dependencies found
                   </div>
                 ) : (
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.entries(dependencies.value).map(
-                      ([name, version]) => (
+                      ([name, version], index) => (
                         <div
-                          key={name}
+                          key={`${name}-${index}`}
                           class="bg-gray-700/50 p-5 rounded-xl flex items-center justify-between hover:bg-gray-700 transition-colors border border-gray-700"
                         >
                           <span class="font-medium text-gray-200">{name}</span>
@@ -80,10 +80,10 @@ export const RepoDependencies = component$<RepoDependenciesProps>(
               </div>
             </Collapsible.Trigger>
 
-            <Collapsible.Content class="collapsible-content overflow-hidden">
-              <div class="mt-3 px-2">
+            <Collapsible.Content class="collapsible-content">
+              <div class="collapsible-inner mt-3 px-2 pb-2">
                 {Object.keys(devDependencies.value).length === 0 ? (
-                  <div class="bg-gray-700/50 p-5 rounded-xl text-gray-400 border border-gray-700 text-center">
+                  <div class="bg-gray-700/50 p-5 rounded-xl text-gray-400 border border-gray-700 text-center h-[100px] flex items-center justify-center">
                     No dev dependencies found
                   </div>
                 ) : (

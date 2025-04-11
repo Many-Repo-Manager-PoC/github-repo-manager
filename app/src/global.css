@@ -31,13 +31,9 @@
   transition: 0s;
 }
 
-/* Collapsible transitions */
-.collapsible-trigger[data-open] .collapsible-chevron {
-  transform: rotate(180deg);
-}
-
+/* Collapsible chevron animation */
 .collapsible-chevron {
-  transition: transform 0.3s ease;
+  transition: transform 300ms ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,41 +44,56 @@
   padding: 4px;
 }
 
+.collapsible-trigger[data-open] .collapsible-chevron {
+  transform: rotate(180deg);
+}
+
 .collapsible-trigger:hover .collapsible-chevron {
   background-color: rgba(139, 92, 246, 0.2);
-  transform: scale(1.1) rotate(0deg);
 }
 
-.collapsible-trigger[data-open]:hover .collapsible-chevron {
-  transform: scale(1.1) rotate(180deg);
+/* Improved collapsible content animation */
+.collapsible-content {
+  overflow: hidden;
+  will-change: height; /* Hint for browser optimization */
+  padding-bottom: 8px; /* Increased padding to prevent content from being cut off */
+  min-height: 0; /* Ensure we start from 0 height */
 }
 
+/* Add styles for the inner wrapper */
+.collapsible-inner {
+  transform-origin: top center;
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  /* Increase bottom margin to ensure content isn't cut off */
+  margin-bottom: 25px;
+}
+
+/* Smoother animation with adjusted timing function */
 .collapsible-content[data-open] {
-  animation: slideDown 0.3s ease-out;
+  animation: 350ms cubic-bezier(0.33, 1, 0.68, 1) 0s 1 normal forwards collapsible-open;
 }
 
 .collapsible-content[data-closed] {
-  animation: slideUp 0.3s ease-out;
+  animation: 280ms cubic-bezier(0.33, 1, 0.68, 1) 0s 1 normal forwards collapsible-closed;
 }
 
-@keyframes slideDown {
+/* Refined keyframes with small opacity fade for smoother appearance */
+@keyframes collapsible-open {
   from {
     height: 0;
-    opacity: 0;
   }
   to {
-    height: var(--qwikui-collapsible-content-height);
-    opacity: 1;
+    /* Balancing content space with animation smoothness */
+    height: var(--qwikui-collapsible-content-height, 120px);
   }
 }
 
-@keyframes slideUp {
+@keyframes collapsible-closed {
   from {
-    height: var(--qwikui-collapsible-content-height);
-    opacity: 1;
+    /* Keep consistent with the open animation */
+    height: var(--qwikui-collapsible-content-height, 120px);
   }
   to {
     height: 0;
-    opacity: 0;
   }
 }
