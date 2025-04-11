@@ -1,8 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$, routeAction$ } from "@builder.io/qwik-city";
 import { getRepositoryDetails, getRepositoryDependencies, updateRepositoryTopics } from "~/api/repos";
-import { RepoDetail } from "~/components/repo-detail/repo-detail";
-import { RepoDependencies } from "~/components/repo-dependencies/repo-dependencies";
+import { TabbedCard } from "~/components/cards/tabbed-card";
 
 export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
   const {owner, repoName} = requestEvent.params;
@@ -41,18 +40,16 @@ export default component$(() => {
   const updateTopicsAction = useUpdateTopics();
   
   return (
-    <div class="w-full max-w-7xl mx-auto px-4 py-10">
+    <div class="w-full max-w-5xl  px-4 py-10">
       <h1 class="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
         Repository Details
       </h1>
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RepoDetail 
+      <div class="grid grid-cols-1 gap-6 items-center justify-center">
+
+        <TabbedCard 
           repoDetails={repoDetailsSignal.value.repository} 
           updateTopicsAction={updateTopicsAction}
-        />
-        <RepoDependencies 
-          dependencies={repoDependenciesSignal.value.dependencies} 
-          devDependencies={repoDependenciesSignal.value.devDependencies} 
+          repoDependencies={repoDependenciesSignal} 
         />
       </div>
     </div>
