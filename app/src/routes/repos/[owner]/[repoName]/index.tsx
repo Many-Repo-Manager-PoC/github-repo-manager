@@ -1,20 +1,29 @@
 import { component$ } from "@builder.io/qwik";
-import { routeLoader$, routeAction$, RequestHandler } from "@builder.io/qwik-city";
-import { getRepositoryDetails, getRepositoryDependencies, updateRepositoryTopics, getDependentRepositories } from "~/api/repos";
+import {
+  routeLoader$,
+  routeAction$,
+  RequestHandler,
+} from "@builder.io/qwik-city";
+import {
+  getRepositoryDetails,
+  getRepositoryDependencies,
+  updateRepositoryTopics,
+  getDependentRepositories,
+} from "~/api/repos";
 import { TabbedCard } from "~/components/cards/tabbed-card";
 
 export const useDependentRepositories = routeLoader$(async (requestEvent) => {
-  const {owner, repoName} = requestEvent.params;
+  const { owner, repoName } = requestEvent.params;
   return await getDependentRepositories(requestEvent, owner, repoName);
 });
 
 export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
-  const {owner, repoName} = requestEvent.params;
+  const { owner, repoName } = requestEvent.params;
   return await getRepositoryDetails(requestEvent, owner, repoName);
 });
 
 export const useRepositoryDependencies = routeLoader$(async (requestEvent) => {
-  const {owner, repoName} = requestEvent.params;
+  const { owner, repoName } = requestEvent.params;
   return await getRepositoryDependencies(requestEvent, owner, repoName);
 });
 
@@ -24,17 +33,12 @@ export const useUpdateTopics = routeAction$(async (data, requestEvent) => {
     const owner = data.owner as string;
     const repo = data.repo as string;
     const topics = data.topics as string[];
-    
+
     // Call the server function with the request event
-    await updateRepositoryTopics(
-      requestEvent,
-      owner,
-      repo,
-      topics
-    );
+    await updateRepositoryTopics(requestEvent, owner, repo, topics);
     return { success: true };
   } catch (error) {
-    console.error('Error updating topics:', error);
+    console.error("Error updating topics:", error);
     return { success: false, error: String(error) };
   }
 });
@@ -50,11 +54,11 @@ export default component$(() => {
         Repository Details
       </h1>
       <div class="grid grid-cols-1 gap-6 items-center justify-center">
-
-        <TabbedCard 
-          repoDetails={repoDetailsSignal.value.repository} 
+        <TabbedCard
+          repoDetails={repoDetailsSignal.value.repository}
           updateTopicsAction={updateTopicsAction}
-          repoDependencies={repoDependenciesSignal} 
+          repoDependencies={repoDependenciesSignal}
+          dependentRepositories={dependentRepositoriesSignal}
         />
       </div>
     </div>

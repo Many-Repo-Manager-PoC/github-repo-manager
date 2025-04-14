@@ -1,18 +1,17 @@
 import { component$, Signal, useComputed$ } from "@builder.io/qwik";
 import { Collapsible } from "@qwik-ui/headless";
-import { LuChevronDown, LuPackage, LuWrench } from "@qwikest/icons/lucide";
+import { LuChevronDown, LuPackage, LuWrench, LuInfo } from "@qwikest/icons/lucide";
+import { RepositoryDependencies } from "~/api/types";
 
 export interface RepoDependenciesProps {
   repoDependencies: Readonly<
-    Signal<{
-      dependencies: Record<string, string>;
-      devDependencies: Record<string, string>;
-    }>
+    Signal<RepositoryDependencies>
   >;
 }
 
 export const RepoDependencies = component$<RepoDependenciesProps>(
   ({ repoDependencies }) => {
+    const packageDetails = useComputed$(() => repoDependencies.value.packageDetails);
     const dependencies = useComputed$<Record<string, string>>(
       () => repoDependencies.value.dependencies
     );
@@ -22,6 +21,36 @@ export const RepoDependencies = component$<RepoDependenciesProps>(
 
     return (
       <div>
+        {/* Package info section */}
+        {packageDetails.value.name && (
+          <div class="mb-8">
+            <div class="px-5 py-6 bg-gray-800/80 rounded-xl mb-2 shadow-sm border border-gray-700">
+              <h2 class="text-xl font-bold text-green-400 flex items-center mb-4">
+                <span class="bg-green-500/20 p-2 rounded-lg mr-3">
+                  <LuInfo class="w-4 h-4 text-green-400" />
+                </span>
+                Package Information
+              </h2>
+              <div class="bg-gray-700/50 p-5 rounded-xl border border-gray-700">
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-gray-300">Package Name</span>
+                    <span class="text-sm bg-gray-800 px-3 py-1.5 rounded-lg text-green-300 font-mono shadow-sm">
+                      {packageDetails.value.name}
+                    </span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-gray-300">Version</span>
+                    <span class="text-sm bg-gray-800 px-3 py-1.5 rounded-lg text-green-300 font-mono shadow-sm">
+                      {packageDetails.value.version}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Dependencies section */}
         <div class="mb-8">
           <Collapsible.Root open>
