@@ -2,7 +2,7 @@ import { server$ } from "@builder.io/qwik-city";
 import { Octokit } from "octokit";
 import type { RequestEventLoader, RequestEventAction } from "@builder.io/qwik-city";
 import type { Session } from "@auth/qwik";
-import { Repository, RepositoryDetails } from "./types";
+import { Repository, RepositoryDetails, DependentRepository } from "./types";
 
 export const getRepositories = server$(
   async (requestEvent: RequestEventLoader) => {
@@ -183,7 +183,7 @@ export const updateRepositoryTopics = server$(
 
 
 export const getDependentRepositories = server$(
-  async (requestEvent: RequestEventLoader, owner: string, repositories: Repository[]) => {
+  async (requestEvent: RequestEventLoader, owner: string, repoName: string) => {
     const session: Session = requestEvent.sharedMap.get("session");
 
     if (!session) {
@@ -194,36 +194,29 @@ export const getDependentRepositories = server$(
       auth: session.accessToken,
     });
 
-    const dependentRepositories: Repository[] = [];
+    const dependentRepositories: DependentRepository[] = [];
 
-    const results = await Promise.all(repositories.map(async (repo) => {
-      const { data: searchResults } = await octokit.rest.search.code({
-        q: `repo:${owner}/${repo.name} filename:package.json`,
-      });
+    const { data: searchResults } = await octokit.rest.search.code({
+      q: `user:${owner} filename:package.json ${repoName}`,
+    });
 
-         // If file is found, fetch its content
-    if (searchResults.total_count > 0) {
-      const fileItem = searchResults.items[0]; // Get the first match
 
-      // Get content of the file using the path from search results
-      const { data: fileData } = await octokit.rest.repos.getContent({
+    await Promise.all(searchResults.items.map(async (item) => {
+      const { data: repoData } = await octokit.rest.repos.getContent({
         owner,
-        repo: repo.name,
-        path: fileItem.path, // Use the path from search results
+        repo: item.repository.name,
+        path: item.path,
       });
 
       if (
-        Array.isArray(fileData) ||
-        fileData.type !== "file" ||
-        !("content" in fileData)
+        Array.isArray(repoData) ||
+        repoData.type !== "file" ||
+        !("content" in repoData)
       ) {
-        return {
-          dependencies: {},
-          devDependencies: {},
-        };
+        return;
       }
 
-      const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+      const content = Buffer.from(repoData.content, "base64").toString("utf-8");
       const parsedContent = JSON.parse(content);
 
       const dependencies: Record<string, string> =
@@ -231,13 +224,25 @@ export const getDependentRepositories = server$(
       const devDependencies: Record<string, string> =
         parsedContent?.devDependencies ?? {};
 
-      return {
-        dependencies,
-        devDependencies,
-      };
-    }
+      console.log({ dependencies, devDependencies });
 
-      return searchResults
+      const targetPackage = dependencies[repoName] || devDependencies[repoName];
+
+      console.log({ targetPackage });
+
+      dependentRepositories.push({
+        id: item.repository.id,
+        name: item.repository.name,
+        full_name: item.repository.full_name,
+        file_path: item.path,
+        targetPackage:  {
+          name: repoName,
+          version: targetPackage,
+        }
+      });
     }));
+    console.dir({ dependentRepositories });
+    return dependentRepositories;
+
   }
 )

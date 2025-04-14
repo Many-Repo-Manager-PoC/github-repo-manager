@@ -26,5 +26,12 @@ export type RepositoryDependencies = {
 }
 
 export type DependentRepository = {
-  
+  id: number;
+  name: string;
+  full_name: string;
+  file_path: string;
+  targetPackage: {
+    name: string;
+    version: string;
+  }
 }
