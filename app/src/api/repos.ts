@@ -180,3 +180,64 @@ export const updateRepositoryTopics = server$(
     });
   }
 );
+
+
+export const getDependentRepositories = server$(
+  async (requestEvent: RequestEventLoader, owner: string, repositories: Repository[]) => {
+    const session: Session = requestEvent.sharedMap.get("session");
+
+    if (!session) {
+      throw new Error("Session not found");
+    }
+
+    const octokit = new Octokit({
+      auth: session.accessToken,
+    });
+
+    const dependentRepositories: Repository[] = [];
+
+    const results = await Promise.all(repositories.map(async (repo) => {
+      const { data: searchResults } = await octokit.rest.search.code({
+        q: `repo:${owner}/${repo.name} filename:package.json`,
+      });
+
+         // If file is found, fetch its content
+    if (searchResults.total_count > 0) {
+      const fileItem = searchResults.items[0]; // Get the first match
+
+      // Get content of the file using the path from search results
+      const { data: fileData } = await octokit.rest.repos.getContent({
+        owner,
+        repo: repo.name,
+        path: fileItem.path, // Use the path from search results
+      });
+
+      if (
+        Array.isArray(fileData) ||
+        fileData.type !== "file" ||
+        !("content" in fileData)
+      ) {
+        return {
+          dependencies: {},
+          devDependencies: {},
+        };
+      }
+
+      const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+      const parsedContent = JSON.parse(content);
+
+      const dependencies: Record<string, string> =
+        parsedContent?.dependencies ?? {};
+      const devDependencies: Record<string, string> =
+        parsedContent?.devDependencies ?? {};
+
+      return {
+        dependencies,
+        devDependencies,
+      };
+    }
+
+      return searchResults
+    }));
+  }
+)

@@ -24,3 +24,7 @@ export type RepositoryDependencies = {
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
 }
+
+export type DependentRepository = {
+  
+}

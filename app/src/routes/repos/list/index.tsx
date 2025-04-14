@@ -3,6 +3,10 @@ import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
 import { getRepositories } from "~/api/repos";
 import { RepoCard } from "~/components/cards/repo-card";
 export const useUserRepositories = routeLoader$(async (requestEvent) => {
+  requestEvent.cacheControl({
+    maxAge: 300,
+  })
+
   return await getRepositories(requestEvent);
 });
 
