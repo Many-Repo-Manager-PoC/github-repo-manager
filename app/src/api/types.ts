@@ -15,12 +15,23 @@ export type Repository = {
   };
 };
 
+export type PackageDetails = {
+  name: string;
+  version: string;
+}
+
+export type DependencyDetails = PackageDetails & {
+  type: "dependency" | "devDependency";
+  outOfDate?: boolean;
+}
+
 export type RepositoryDetails = Repository & {
   html_url: string;
   topics: string[];
 }
 
 export type RepositoryDependencies = {
+  packageDetails: PackageDetails;
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
 }
@@ -30,8 +41,5 @@ export type DependentRepository = {
   name: string;
   full_name: string;
   file_path: string;
-  targetPackage: {
-    name: string;
-    version: string;
-  }
+  targetDependency: DependencyDetails;
 }

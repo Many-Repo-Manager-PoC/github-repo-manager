@@ -2,7 +2,7 @@ import { server$ } from "@builder.io/qwik-city";
 import { Octokit } from "octokit";
 import type { RequestEventLoader, RequestEventAction } from "@builder.io/qwik-city";
 import type { Session } from "@auth/qwik";
-import { Repository, RepositoryDetails, DependentRepository } from "./types";
+import { Repository, RepositoryDetails, DependentRepository, DependencyDetails } from "./types";
 
 export const getRepositories = server$(
   async (requestEvent: RequestEventLoader) => {
@@ -129,6 +129,7 @@ export const getRepositoryDependencies = server$(
         !("content" in fileData)
       ) {
         return {
+          packageDetails: { name: "", version: "" },
           dependencies: {},
           devDependencies: {},
         };
@@ -137,12 +138,18 @@ export const getRepositoryDependencies = server$(
       const content = Buffer.from(fileData.content, "base64").toString("utf-8");
       const parsedContent = JSON.parse(content);
 
+      const packageDetails = {
+        name: parsedContent?.name || "",
+        version: parsedContent?.version || ""
+      };
+
       const dependencies: Record<string, string> =
         parsedContent?.dependencies ?? {};
       const devDependencies: Record<string, string> =
         parsedContent?.devDependencies ?? {};
 
       return {
+        packageDetails,
         dependencies,
         devDependencies,
       };
@@ -150,6 +157,7 @@ export const getRepositoryDependencies = server$(
 
     // Return empty objects when no package.json is found
     return {
+      packageDetails: { name: "", version: "" },
       dependencies: {},
       devDependencies: {},
     };
@@ -224,21 +232,30 @@ export const getDependentRepositories = server$(
       const devDependencies: Record<string, string> =
         parsedContent?.devDependencies ?? {};
 
-      console.log({ dependencies, devDependencies });
+      let dependencyDetails: DependencyDetails;
 
-      const targetPackage = dependencies[repoName] || devDependencies[repoName];
-
-      console.log({ targetPackage });
+      if (dependencies[repoName]) {
+        dependencyDetails = {
+          name: repoName,
+          version: dependencies[repoName],
+          type: "dependency",
+        };
+      } else if (devDependencies[repoName]) {
+        dependencyDetails = {
+          name: repoName,
+          version: devDependencies[repoName],
+          type: "devDependency",
+        };
+      } else {
+        return;
+      }
 
       dependentRepositories.push({
         id: item.repository.id,
         name: item.repository.name,
         full_name: item.repository.full_name,
         file_path: item.path,
-        targetPackage:  {
-          name: repoName,
-          version: targetPackage,
-        }
+        targetDependency: dependencyDetails,
       });
     }));
     console.dir({ dependentRepositories });
