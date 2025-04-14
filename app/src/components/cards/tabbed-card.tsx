@@ -9,8 +9,8 @@ import { DependentRepositories } from "../dependent-repositories/dependent-repos
 
 export interface TabbedCardProps {
   repoDetails: RepositoryDetails;
-  repoDependencies: Readonly<Signal<RepositoryDependencies>>;
-  dependentRepositories: Readonly<Signal<DependentRepository[]>>;
+  repoDependencies: RepositoryDependencies;
+  dependentRepositories: DependentRepository[];
   updateTopicsAction: ActionStore<
     { success: boolean },
     { owner: string; repo: string; topics: string[] }
@@ -23,7 +23,7 @@ export const TabbedCard = component$<TabbedCardProps>(({
   repoDependencies, 
   dependentRepositories 
 }) => {
-  const hasDependents = dependentRepositories.value.length > 0;
+    const hasDependents = dependentRepositories.length > 0;
   
   return (
     <GenericCard>

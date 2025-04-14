@@ -3,7 +3,7 @@ import { DependentRepository } from "~/api/types";
 import { LuPackage, LuCode, LuGitBranch } from "@qwikest/icons/lucide";
 
 export interface DependentRepositoriesProps {
-  dependentRepositories: Readonly<Signal<DependentRepository[]>>;
+  dependentRepositories: DependentRepository[];
 }
 
 export const DependentRepositories = component$<DependentRepositoriesProps>(
@@ -11,11 +11,11 @@ export const DependentRepositories = component$<DependentRepositoriesProps>(
     return (
       <div>
         <h2 class="text-2xl font-bold mb-4 text-purple-400">
-          Found {dependentRepositories.value.length} Dependent Repositories:
+          Found {dependentRepositories.length} Dependent Repositories:
         </h2>
         
         <div class="grid grid-cols-1 gap-4">
-          {dependentRepositories.value.map((repo) => (
+          {dependentRepositories.map((repo) => (
             <div 
               key={repo.id} 
               class="bg-gray-800/60 p-5 rounded-xl border border-gray-700 hover:border-purple-600/30 hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"

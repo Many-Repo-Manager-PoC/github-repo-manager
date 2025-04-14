@@ -4,19 +4,17 @@ import { LuChevronDown, LuPackage, LuWrench, LuInfo } from "@qwikest/icons/lucid
 import { RepositoryDependencies } from "~/api/types";
 
 export interface RepoDependenciesProps {
-  repoDependencies: Readonly<
-    Signal<RepositoryDependencies>
-  >;
+  repoDependencies: RepositoryDependencies;
 }
 
 export const RepoDependencies = component$<RepoDependenciesProps>(
   ({ repoDependencies }) => {
-    const packageDetails = useComputed$(() => repoDependencies.value.packageDetails);
+    const packageDetails = useComputed$(() => repoDependencies.packageDetails);
     const dependencies = useComputed$<Record<string, string>>(
-      () => repoDependencies.value.dependencies
+      () => repoDependencies.dependencies
     );
     const devDependencies = useComputed$<Record<string, string>>(
-      () => repoDependencies.value.devDependencies
+      () => repoDependencies.devDependencies
     );
 
     return (
