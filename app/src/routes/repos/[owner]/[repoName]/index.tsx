@@ -15,6 +15,8 @@ import { TabbedCard } from "~/components/cards/tabbed-card";
 
 export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
   const { owner, repoName } = requestEvent.params;
+  const ownerType = requestEvent.url.searchParams.get('type') ?? "";
+
   const repoDetails = await getRepositoryDetails(requestEvent, owner, repoName);
   const repoDependencies = await getRepositoryDependencies(
     requestEvent,
@@ -30,7 +32,7 @@ export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
     dependentRepositories = await getDependentRepositories(
       requestEvent,
       owner,
-      repoName,
+      ownerType,
       repoDependencies.packageDetails
     );
   }

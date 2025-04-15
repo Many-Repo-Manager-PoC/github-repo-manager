@@ -18,7 +18,7 @@ export const RepoCard = component$<RepoCardProps>(
     return (
       <div 
         onClick$={() => {
-          navigate(`/repos/${repoDetails.owner.login}/${repoDetails.name}`);
+          navigate(`/repos/${repoDetails.owner.login}/${repoDetails.name}?type=${repoDetails.owner.type}`);
         }}
         class="ripple bg-gray-800 rounded-3xl border border-gray-700 p-6 shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 cursor-pointer max-w-md w-full h-full min-h-[200px] hover:border-purple-500/30"
       >
