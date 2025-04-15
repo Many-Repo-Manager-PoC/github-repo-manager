@@ -51,7 +51,7 @@ export const TabbedCard = component$<TabbedCardProps>(({
           </Tabs.Panel>
           {hasDependents && (
             <Tabs.Panel class="text-gray-300 py-2 mt-4">
-              <DependentRepositories dependentRepositories={dependentRepositories} />
+              <DependentRepositories dependentRepositories={dependentRepositories} targetPackageDetails={repoDependencies.packageDetails} />
             </Tabs.Panel>
           )}
         </Tabs.Root>

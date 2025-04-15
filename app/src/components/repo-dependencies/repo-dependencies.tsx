@@ -25,9 +25,9 @@ export const RepoDependencies = component$<RepoDependenciesProps>(
             <div class="px-5 py-6 bg-gray-800/80 rounded-xl mb-2 shadow-sm border border-gray-700">
               <h2 class="text-xl font-bold text-green-400 flex items-center mb-4">
                 <span class="bg-green-500/20 p-2 rounded-lg mr-3">
-                  <LuInfo class="w-4 h-4 text-green-400" />
+                  <LuPackage class="w-4 h-4 text-green-400" />
                 </span>
-                Package Information
+                Package Details
               </h2>
               <div class="bg-gray-700/50 p-5 rounded-xl border border-gray-700">
                 <div class="flex flex-col gap-2">
