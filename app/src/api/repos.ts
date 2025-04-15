@@ -2,7 +2,8 @@ import { server$ } from "@builder.io/qwik-city";
 import { Octokit } from "octokit";
 import type { RequestEventLoader, RequestEventAction } from "@builder.io/qwik-city";
 import type { Session } from "@auth/qwik";
-import { Repository, RepositoryDetails, DependentRepository, DependencyDetails } from "./types";
+import { Repository, RepositoryDetails, DependentRepository, DependencyDetails, PackageDetails } from "./types";
+import { isVersionOutdated } from "~/utils/dependency-utils";
 
 export const getRepositories = server$(
   async (requestEvent: RequestEventLoader) => {
@@ -191,7 +192,7 @@ export const updateRepositoryTopics = server$(
 
 
 export const getDependentRepositories = server$(
-  async (requestEvent: RequestEventLoader, owner: string, repoName: string) => {
+  async (requestEvent: RequestEventLoader, owner: string, repoName: string, packageDetails: PackageDetails) => {
     const session: Session = requestEvent.sharedMap.get("session");
 
     if (!session) {
@@ -234,17 +235,19 @@ export const getDependentRepositories = server$(
 
       let dependencyDetails: DependencyDetails;
 
-      if (dependencies[repoName]) {
+      if (dependencies[packageDetails.name]) {
         dependencyDetails = {
-          name: repoName,
-          version: dependencies[repoName],
+          name: packageDetails.name,
+          version: dependencies[packageDetails.name],
           type: "dependency",
+          outOfDate: isVersionOutdated(dependencies[packageDetails.name], packageDetails.version)
         };
-      } else if (devDependencies[repoName]) {
+      } else if (devDependencies[packageDetails.name]) {
         dependencyDetails = {
-          name: repoName,
-          version: devDependencies[repoName],
+          name: packageDetails.name,
+          version: devDependencies[packageDetails.name],
           type: "devDependency",
+          outOfDate: isVersionOutdated(devDependencies[packageDetails.name], packageDetails.version)
         };
       } else {
         return;

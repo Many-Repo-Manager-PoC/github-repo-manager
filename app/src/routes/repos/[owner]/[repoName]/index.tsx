@@ -30,7 +30,8 @@ export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
     dependentRepositories = await getDependentRepositories(
       requestEvent,
       owner,
-      repoName
+      repoName,
+      repoDependencies.packageDetails
     );
   }
 
@@ -43,7 +44,6 @@ export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
 
 export const useUpdateTopics = routeAction$(async (data, requestEvent) => {
   try {
-    // console.log({data})
     const owner = data.owner as string;
     const repo = data.repo as string;
     const topics = data.topics as string[];
