@@ -106,9 +106,7 @@ export const getRepositoryDetails = server$(async function (
 });
 
 export const getRepositoryDependencies = server$(
-  async (requestEvent: RequestEventLoader, owner: string, repo: string) => {
-    const session: Session = requestEvent.sharedMap.get("session");
-
+  async (session: Session | null, owner: string, repo: string) => {
     if (!session) {
       throw new Error("Session not found");
     }
@@ -204,14 +202,11 @@ export const updateRepositoryTopics = server$(
 
 export const getDependentRepositories = server$(
   async (
-    requestEvent: RequestEventLoader,
+    session: Session | null,
     owner: string,
     ownerType: string,
     packageDetails: PackageDetails
   ) => {
-    const session: Session = requestEvent.sharedMap.get("session");
-    console.log({ packageDetails });
-
     if (!session) {
       throw new Error("Session not found");
     }

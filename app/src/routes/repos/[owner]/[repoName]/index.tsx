@@ -1,8 +1,9 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useTask$, useSignal, $ } from "@builder.io/qwik";
 import {
   routeLoader$,
   routeAction$,
   RequestHandler,
+  useLocation,
 } from "@builder.io/qwik-city";
 import {
   getRepositoryDetails,
@@ -10,37 +11,69 @@ import {
   updateRepositoryTopics,
   getDependentRepositories,
 } from "~/api/repos";
-import { DependentRepository } from "~/api/types";
+import { DependentRepository, RepositoryDependencies } from "~/api/types";
 import { TabbedCard } from "~/components/cards/tabbed-card";
+import { useSession } from "~/routes/plugin@auth";
+
+// export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
+//   const { owner, repoName } = requestEvent.params;
+//   const ownerType = requestEvent.url.searchParams.get('type') ?? "";
+
+//   const repoDetails = await getRepositoryDetails(requestEvent, owner, repoName);
+//   const repoDependencies = await getRepositoryDependencies(
+//     requestEvent,
+//     owner,
+//     repoName
+//   );
+//   let dependentRepositories: DependentRepository[] = [];
+
+//   const isDesignSystem =
+//     repoDetails.repository.topics.includes("design-system");
+
+//   if (isDesignSystem) {
+//     dependentRepositories = await getDependentRepositories(
+//       requestEvent,
+//       owner,
+//       ownerType,
+//       repoDependencies.packageDetails
+//     );
+//   }
+
+//   return {
+//     repoDetails: repoDetails.repository,
+//     repoDependencies,
+//     dependentRepositories,
+//     isDesignSystem,
+//   };
+// });
+
+  // useTask$(async () => {
+  //   repoDependencies.value = await getRepositoryDependencies(
+  //     session.value,
+  //     owner,
+  //     repoName
+  //   );
+
+  //   if (isDesignSystem) {
+  //     dependentRepositories.value = await getDependentRepositories(
+  //       session.value,
+  //       owner,
+  //       ownerType,
+  //       repoDependencies.value.packageDetails
+  //     );
+  //   }
+  // });
 
 export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
   const { owner, repoName } = requestEvent.params;
-  const ownerType = requestEvent.url.searchParams.get('type') ?? "";
-
   const repoDetails = await getRepositoryDetails(requestEvent, owner, repoName);
-  const repoDependencies = await getRepositoryDependencies(
-    requestEvent,
-    owner,
-    repoName
-  );
-  let dependentRepositories: DependentRepository[] = [];
 
   const isDesignSystem =
     repoDetails.repository.topics.includes("design-system");
 
-  if (isDesignSystem) {
-    dependentRepositories = await getDependentRepositories(
-      requestEvent,
-      owner,
-      ownerType,
-      repoDependencies.packageDetails
-    );
-  }
-
   return {
     repoDetails: repoDetails.repository,
-    repoDependencies,
-    dependentRepositories,
+    isDesignSystem,
   };
 });
 
@@ -60,11 +93,39 @@ export const useUpdateTopics = routeAction$(async (data, requestEvent) => {
 });
 
 export default component$(() => {
-  const {
-    value: { repoDetails, repoDependencies, dependentRepositories },
-  } = useRepositoryDetails();
+  const session = useSession();
+  const {params, url} = useLocation();
+  const { owner, repoName } = params;
+  const ownerType = url.searchParams.get('type') ?? "";
 
+  const dependentRepositories = useSignal<DependentRepository[]>([]);
+  const repoDependencies = useSignal<RepositoryDependencies>({
+    packageDetails: { name: "", version: "" },
+    dependencies: {},
+    devDependencies: {},
+  });
+
+  const {
+    value: { repoDetails, isDesignSystem },
+  } = useRepositoryDetails();
   const updateTopicsAction = useUpdateTopics();
+
+  const fetchDependencies = $(async () => {
+    repoDependencies.value = await getRepositoryDependencies(
+      session.value,
+      owner,
+      repoName
+    );
+  });
+
+  const fetchDependentRepositories = $(async () => {
+    dependentRepositories.value = await getDependentRepositories(
+      session.value,
+      owner,
+      ownerType,
+      repoDependencies.value.packageDetails
+    );
+  });
 
   return (
     <div class="w-full max-w-5xl  px-4 py-10">
@@ -75,8 +136,11 @@ export default component$(() => {
         <TabbedCard
           repoDetails={repoDetails}
           updateTopicsAction={updateTopicsAction}
-          repoDependencies={repoDependencies}
-          dependentRepositories={dependentRepositories}
+          repoDependencies={repoDependencies.value}
+          dependentRepositories={dependentRepositories.value}
+          fetchDependencies={fetchDependencies}
+          fetchDependentRepositories={fetchDependentRepositories}
+          isDesignSystem={isDesignSystem}
         />
       </div>
     </div>

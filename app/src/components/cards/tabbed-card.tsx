@@ -11,6 +11,9 @@ export interface TabbedCardProps {
   repoDetails: RepositoryDetails;
   repoDependencies: RepositoryDependencies;
   dependentRepositories: DependentRepository[];
+  fetchDependencies: () => Promise<void>;
+  fetchDependentRepositories: () => Promise<void>;
+  isDesignSystem: boolean;
   updateTopicsAction: ActionStore<
     { success: boolean },
     { owner: string; repo: string; topics: string[] }
@@ -21,9 +24,11 @@ export const TabbedCard = component$<TabbedCardProps>(({
   repoDetails, 
   updateTopicsAction, 
   repoDependencies, 
-  dependentRepositories 
+  dependentRepositories,
+  fetchDependencies,
+  fetchDependentRepositories,
+  isDesignSystem
 }) => {
-    const hasDependents = dependentRepositories.length > 0;
   
   return (
     <GenericCard>
@@ -33,11 +38,11 @@ export const TabbedCard = component$<TabbedCardProps>(({
             <Tabs.Tab class="cursor-pointer relative px-6 py-3 font-medium transition-colors text-gray-400 hover:text-gray-300 aria-[selected=true]:text-purple-400 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-transparent aria-[selected=true]:after:bg-purple-600">
                 Details
             </Tabs.Tab>
-            <Tabs.Tab class="cursor-pointer relative px-6 py-3 font-medium transition-colors text-gray-400 hover:text-gray-300 aria-[selected=true]:text-purple-400 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-transparent aria-[selected=true]:after:bg-purple-600">
+            <Tabs.Tab onClick$={fetchDependencies} class="cursor-pointer relative px-6 py-3 font-medium transition-colors text-gray-400 hover:text-gray-300 aria-[selected=true]:text-purple-400 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-transparent aria-[selected=true]:after:bg-purple-600">
               Dependencies
             </Tabs.Tab>
-            {hasDependents && (
-              <Tabs.Tab class="cursor-pointer relative px-6 py-3 font-medium transition-colors text-gray-400 hover:text-gray-300 aria-[selected=true]:text-purple-400 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-transparent aria-[selected=true]:after:bg-purple-600">
+            {isDesignSystem && (
+              <Tabs.Tab onClick$={fetchDependentRepositories} class="cursor-pointer relative px-6 py-3 font-medium transition-colors text-gray-400 hover:text-gray-300 aria-[selected=true]:text-purple-400 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-transparent aria-[selected=true]:after:bg-purple-600">
                 Dependent Repositories
               </Tabs.Tab>
             )}
@@ -49,7 +54,7 @@ export const TabbedCard = component$<TabbedCardProps>(({
           <Tabs.Panel class="text-gray-300 py-2 mt-4">
             <RepoDependencies repoDependencies={repoDependencies} />
           </Tabs.Panel>
-          {hasDependents && (
+          {isDesignSystem && (
             <Tabs.Panel class="text-gray-300 py-2 mt-4">
               <DependentRepositories dependentRepositories={dependentRepositories} targetPackageDetails={repoDependencies.packageDetails} />
             </Tabs.Panel>
