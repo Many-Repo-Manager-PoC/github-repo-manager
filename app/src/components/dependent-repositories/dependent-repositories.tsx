@@ -44,9 +44,9 @@ export const DependentRepositories = component$<DependentRepositoriesProps>(
         </h2>
         
         <div class="grid grid-cols-1 gap-4">
-          {dependentRepositories.map((repo) => (
+          {dependentRepositories.map((repo, index) => (
             <div 
-              key={repo.id} 
+              key={index} 
               class="bg-gray-800/60 p-5 rounded-xl border border-gray-700 hover:border-purple-600/30 hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <div class="flex items-start gap-4">

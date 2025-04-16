@@ -2,6 +2,7 @@ import { component$ } from '@builder.io/qwik';
 import { Select } from '@qwik-ui/headless';
 import { LuCheck, LuChevronDown } from '@qwikest/icons/lucide';
 import { QRL } from '@builder.io/qwik';
+
 interface SelectProps<T extends Record<string, unknown> = Record<string, string>> {
   options: T[];
   labelKey: keyof T;
@@ -16,7 +17,6 @@ export const SelectList = component$(({
   labelKey, 
   valueKey, 
   label = 'Select an option',
-  placeholder = 'Select an option',
   onChange
 }: SelectProps) => {
 
@@ -39,11 +39,11 @@ export const SelectList = component$(({
             {options.map((option) => (
               <Select.Item
                 class="flex items-center px-4 py-2.5 text-gray-200 rounded-lg cursor-pointer hover:bg-gray-700/60 transition-colors aria-selected:bg-purple-600/20 aria-selected:text-purple-300 outline-none"
-                value={String(option[valueKey])} 
-                key={String(option[valueKey])}
+                value={option[valueKey]} 
+                key={option[valueKey]}
               >
                 <div class="flex-1">
-                  <Select.ItemLabel>{String(option[labelKey])}</Select.ItemLabel>
+                  <Select.ItemLabel>{option[labelKey]}</Select.ItemLabel>
                 </div>
                 <Select.ItemIndicator class="ml-2 text-purple-400">
                   <LuCheck class="w-4 h-4" />
