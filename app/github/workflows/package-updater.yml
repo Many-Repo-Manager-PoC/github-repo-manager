@@ -1,0 +1,36 @@
+name: Update Package Dependencies
+
+on: 
+  workflow_dispatch:
+    inputs:
+      packageName:
+        description: 'Package to update'
+        required: false
+      version:
+        description: 'Version to update to'
+        required: false
+        default: 'latest'
+      owner:
+        description: 'Owner'
+        required: false
+      repo:
+        description: 'Repository'
+        required: false
+      branchName:
+        description: 'Branch name to create'
+        required: false
+        default: 'deps/update-packages'
+      baseBranch:
+        description: 'Base branch'
+        required: false
+        default: 'main'
+  
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.owner }}/${{ inputs.repo }}
+          ref: ${{ inputs.branchName }}
