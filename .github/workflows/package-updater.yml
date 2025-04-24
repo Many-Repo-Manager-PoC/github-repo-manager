@@ -29,6 +29,28 @@ jobs:
   update-dependencies:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           repository: ${{ inputs.owner }}/${{ inputs.repo }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Update Dependencies
+        run: |
+          npm install ${{ inputs.packageName }}@${{ inputs.version }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: Update ${{ inputs.packageName }} to ${{ inputs.version }}
+          body: |
+            This PR updates ${{ inputs.packageName }} to ${{ inputs.version }}.
+          base: main
+          branch: ${{ inputs.branchName }}
+          commit-message: Update ${{ inputs.packageName }} to ${{ inputs.version }}
+          draft: true
+
