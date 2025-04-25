@@ -40,7 +40,15 @@ export type RepositoryDependencies = {
 export type DependentRepository = {
   id: number;
   name: string;
+  owner: string;
   full_name: string;
   file_path: string;
   targetDependency: DependencyDetails;
+}
+
+export type CreateWorkflowDispatchProps = {
+  owner: string;
+  repo: string;
+  branchName?: string;
+  packageDetails: PackageDetails;
 }

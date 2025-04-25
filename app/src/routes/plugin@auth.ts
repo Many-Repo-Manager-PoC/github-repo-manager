@@ -14,7 +14,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
       GitHub({
         authorization: {
           params: {
-            scope: 'read:user user:email repo',
+            scope: 'read:user user:email repo workflow',
           },
         },
       }),

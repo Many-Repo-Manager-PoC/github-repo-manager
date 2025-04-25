@@ -18,6 +18,9 @@ export interface TabbedCardProps {
     { success: boolean },
     { owner: string; repo: string; topics: string[] }
   >;
+  createWorkflowDispatchAction: ActionStore<{
+    success: boolean;
+}, Record<string, unknown>, true>
 }
 
 export const TabbedCard = component$<TabbedCardProps>(({ 
@@ -27,7 +30,8 @@ export const TabbedCard = component$<TabbedCardProps>(({
   dependentRepositories,
   fetchDependencies,
   fetchDependentRepositories,
-  isDesignSystem
+  isDesignSystem,
+  createWorkflowDispatchAction
 }) => {
   
   return (
@@ -56,7 +60,7 @@ export const TabbedCard = component$<TabbedCardProps>(({
           </Tabs.Panel>
           {isDesignSystem && (
             <Tabs.Panel class="text-gray-300 py-2 mt-4">
-              <DependentRepositories dependentRepositories={dependentRepositories} targetPackageDetails={repoDependencies.packageDetails} />
+              <DependentRepositories dependentRepositories={dependentRepositories} targetPackageDetails={repoDependencies.packageDetails} createWorkflowDispatchAction={createWorkflowDispatchAction} />
             </Tabs.Panel>
           )}
         </Tabs.Root>

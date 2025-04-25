@@ -10,59 +10,11 @@ import {
   getRepositoryDependencies,
   updateRepositoryTopics,
   getDependentRepositories,
+  createWorkflowDispatch,
 } from "~/api/repos";
-import { DependentRepository, RepositoryDependencies } from "~/api/types";
+import { DependentRepository, RepositoryDependencies, CreateWorkflowDispatchProps } from "~/api/types";
 import { TabbedCard } from "~/components/cards/tabbed-card";
 import { useSession } from "~/routes/plugin@auth";
-
-// export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
-//   const { owner, repoName } = requestEvent.params;
-//   const ownerType = requestEvent.url.searchParams.get('type') ?? "";
-
-//   const repoDetails = await getRepositoryDetails(requestEvent, owner, repoName);
-//   const repoDependencies = await getRepositoryDependencies(
-//     requestEvent,
-//     owner,
-//     repoName
-//   );
-//   let dependentRepositories: DependentRepository[] = [];
-
-//   const isDesignSystem =
-//     repoDetails.repository.topics.includes("design-system");
-
-//   if (isDesignSystem) {
-//     dependentRepositories = await getDependentRepositories(
-//       requestEvent,
-//       owner,
-//       ownerType,
-//       repoDependencies.packageDetails
-//     );
-//   }
-
-//   return {
-//     repoDetails: repoDetails.repository,
-//     repoDependencies,
-//     dependentRepositories,
-//     isDesignSystem,
-//   };
-// });
-
-  // useTask$(async () => {
-  //   repoDependencies.value = await getRepositoryDependencies(
-  //     session.value,
-  //     owner,
-  //     repoName
-  //   );
-
-  //   if (isDesignSystem) {
-  //     dependentRepositories.value = await getDependentRepositories(
-  //       session.value,
-  //       owner,
-  //       ownerType,
-  //       repoDependencies.value.packageDetails
-  //     );
-  //   }
-  // });
 
 export const useRepositoryDetails = routeLoader$(async (requestEvent) => {
   const { owner, repoName } = requestEvent.params;
@@ -92,6 +44,16 @@ export const useUpdateTopics = routeAction$(async (data, requestEvent) => {
   }
 });
 
+export const useCreateWorkflowDispatch = routeAction$(async (data, requestEvent) => {
+  const values = data as CreateWorkflowDispatchProps;
+  await createWorkflowDispatch(requestEvent, "benjamin-kunai", "github-repo-manager", {
+    packageDetails: { name: values.packageDetails.name, version: values.packageDetails.version },
+    owner: values.owner,
+    repo: values.repo,
+  });
+    return { success: true };
+});
+
 export default component$(() => {
   const session = useSession();
   const {params, url} = useLocation();
@@ -109,7 +71,7 @@ export default component$(() => {
     value: { repoDetails, isDesignSystem },
   } = useRepositoryDetails();
   const updateTopicsAction = useUpdateTopics();
-
+  const createWorkflowDispatchAction = useCreateWorkflowDispatch();
   const fetchDependencies = $(async () => {
     repoDependencies.value = await getRepositoryDependencies(
       session.value,
@@ -141,6 +103,7 @@ export default component$(() => {
           fetchDependencies={fetchDependencies}
           fetchDependentRepositories={fetchDependentRepositories}
           isDesignSystem={isDesignSystem}
+          createWorkflowDispatchAction={createWorkflowDispatchAction}
         />
       </div>
     </div>

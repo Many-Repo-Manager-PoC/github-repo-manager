@@ -1,14 +1,17 @@
 import { component$ } from "@builder.io/qwik";
 import { DependentRepository, PackageDetails } from "~/api/types";
 import { LuPackage, LuCode, LuGitBranch, LuAlertCircle, LuArrowUpCircle, LuCheckCircle } from "@qwikest/icons/lucide";
-
+import { ActionStore } from "@builder.io/qwik-city";
 export interface DependentRepositoriesProps {
   dependentRepositories: DependentRepository[];
   targetPackageDetails: PackageDetails;
+  createWorkflowDispatchAction: ActionStore<{
+    success: boolean;
+}, Record<string, unknown>, true>
 }
 
 export const DependentRepositories = component$<DependentRepositoriesProps>(
-  ({ dependentRepositories, targetPackageDetails }) => {
+  ({ dependentRepositories, targetPackageDetails, createWorkflowDispatchAction }) => {
     return (
       <div>
         {/* Package info section */}
@@ -100,7 +103,11 @@ export const DependentRepositories = component$<DependentRepositoriesProps>(
                     {repo.targetDependency.outOfDate && (
                       <button
                         class="flex items-center bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 px-3 py-2 rounded-lg text-sm transition-colors duration-200 border border-purple-600/30 cursor-pointer"
-                        onClick$={() => console.log(`Update ${repo.name} to latest version`)}
+                        onClick$={() => createWorkflowDispatchAction.submit({
+                          repo: repo.name,
+                          owner: repo.owner,
+                          packageDetails: targetPackageDetails,
+                        })}
                       >
                         <LuArrowUpCircle class="w-4 h-4 mr-2" />
                         Update to Latest

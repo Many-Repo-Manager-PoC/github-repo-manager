@@ -11,6 +11,7 @@ import {
   DependentRepository,
   DependencyDetails,
   PackageDetails,
+  CreateWorkflowDispatchProps,
 } from "./types";
 import { isVersionOutdated } from "~/utils/dependency-utils";
 
@@ -281,6 +282,7 @@ export const getDependentRepositories = server$(
         dependentRepositories.push({
           id: item.repository.id,
           name: item.repository.name,
+          owner: item.repository.owner.login,
           full_name: item.repository.full_name,
           file_path: item.path,
           targetDependency: dependencyDetails,
@@ -289,5 +291,43 @@ export const getDependentRepositories = server$(
     );
     // console.dir({ dependentRepositories });
     return dependentRepositories;
+  }
+);
+
+export const createWorkflowDispatch = server$(
+  async (
+    requestEvent: RequestEventAction,
+    workflowOwner: string,
+    workflowRepo: string,
+    workflowProps: CreateWorkflowDispatchProps
+  ) => {
+    const session: Session = requestEvent.sharedMap.get("session");
+
+    console.log({ workflowOwner, workflowRepo, workflowProps });
+
+    if (!session) {
+      throw new Error("Session not found");
+    }
+
+    const octokit = new Octokit({
+      auth: session.accessToken,
+    });
+
+    // TODO: Remove hardcoded values
+      await octokit.rest.actions.createWorkflowDispatch({
+        owner: workflowOwner, // This is the owner of the workflow
+        repo: workflowRepo, // This is the repo that the workflow is in
+        workflow_id: "package-updater.yml", // This is the workflow file name
+        ref: "main", // This is the branch that the workflow will be run on
+        inputs: {
+          // These are the input props for the workflow - includes packageDetails, branchName, etc. as well as the owner and repo name of the repo that is being checked out/updated
+          packageName: workflowProps.packageDetails.name,
+          version: workflowProps.packageDetails.version,
+          owner: workflowProps.owner,
+          repo: workflowProps.repo,
+          branchName: workflowProps.branchName,
+          token: session.accessToken,
+        },
+      });
   }
 );
