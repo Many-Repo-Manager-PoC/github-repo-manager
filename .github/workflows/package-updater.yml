@@ -46,6 +46,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ github.token }}
           title: Update ${{ inputs.packageName }} to ${{ inputs.version }}
           body: |
             This PR updates ${{ inputs.packageName }} to ${{ inputs.version }}.
