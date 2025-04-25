@@ -58,4 +58,6 @@ jobs:
           base: main
           branch: ${{ inputs.branchName }}
           commit-message: Update ${{ inputs.packageName }} to ${{ inputs.version }}
+          labels: |
+            design-system-upgrade
 
