@@ -279,6 +279,13 @@ export const getDependentRepositories = server$(
           return;
         }
 
+        const hasOpenDesignSystemPullRequests =
+          await getHasOpenDesignSystemPullRequests(
+            session,
+            owner,
+            item.repository.name
+          );
+
         dependentRepositories.push({
           id: item.repository.id,
           name: item.repository.name,
@@ -286,6 +293,7 @@ export const getDependentRepositories = server$(
           full_name: item.repository.full_name,
           file_path: item.path,
           targetDependency: dependencyDetails,
+          hasOpenDesignSystemPullRequests,
         });
       })
     );
@@ -314,20 +322,47 @@ export const createWorkflowDispatch = server$(
     });
 
     // TODO: Remove hardcoded values
-      await octokit.rest.actions.createWorkflowDispatch({
-        owner: workflowOwner, // This is the owner of the workflow
-        repo: workflowRepo, // This is the repo that the workflow is in
-        workflow_id: "package-updater.yml", // This is the workflow file name
-        ref: "main", // This is the branch that the workflow will be run on
-        inputs: {
-          // These are the input props for the workflow - includes packageDetails, branchName, etc. as well as the owner and repo name of the repo that is being checked out/updated
-          packageName: workflowProps.packageDetails.name,
-          version: workflowProps.packageDetails.version,
-          owner: workflowProps.owner,
-          repo: workflowProps.repo,
-          branchName: workflowProps.branchName,
-          token: session.accessToken,
-        },
-      });
+    await octokit.rest.actions.createWorkflowDispatch({
+      owner: workflowOwner, // This is the owner of the workflow
+      repo: workflowRepo, // This is the repo that the workflow is in
+      workflow_id: "package-updater.yml", // This is the workflow file name
+      ref: "main", // This is the branch that the workflow will be run on
+      inputs: {
+        // These are the input props for the workflow - includes packageDetails, branchName, etc. as well as the owner and repo name of the repo that is being checked out/updated
+        packageName: workflowProps.packageDetails.name,
+        version: workflowProps.packageDetails.version,
+        owner: workflowProps.owner,
+        repo: workflowProps.repo,
+        branchName: workflowProps.branchName,
+        token: session.accessToken,
+      },
+    });
+  }
+);
+
+export const getHasOpenDesignSystemPullRequests = server$(
+  async (session: Session | null, owner: string, repo: string) => {
+    if (!session) {
+      throw new Error("Session not found");
+    }
+
+    const octokit = new Octokit({
+      auth: session.accessToken,
+    });
+
+    const { data: pullRequests } = await octokit.rest.pulls.list({
+      owner,
+      repo,
+      state: "open",
+      base: "main",
+    });
+
+    const designSystemPullRequests = pullRequests.filter((pullRequest) => {
+      return pullRequest.labels.some(
+        (label) => label.name === "design-system-upgrade"
+      );
+    });
+
+    return designSystemPullRequests.length > 0;
   }
 );

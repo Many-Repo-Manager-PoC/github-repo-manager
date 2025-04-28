@@ -44,6 +44,7 @@ export type DependentRepository = {
   full_name: string;
   file_path: string;
   targetDependency: DependencyDetails;
+  hasOpenDesignSystemPullRequests: boolean;
 }
 
 export type CreateWorkflowDispatchProps = {

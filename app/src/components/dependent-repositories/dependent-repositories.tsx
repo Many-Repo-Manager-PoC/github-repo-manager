@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import { DependentRepository, PackageDetails } from "~/api/types";
-import { LuPackage, LuCode, LuGitBranch, LuAlertCircle, LuArrowUpCircle, LuCheckCircle } from "@qwikest/icons/lucide";
+import { LuPackage, LuCode, LuGitBranch, LuAlertCircle, LuArrowUpCircle, LuCheckCircle, LuClock } from "@qwikest/icons/lucide";
 import { ActionStore } from "@builder.io/qwik-city";
 export interface DependentRepositoriesProps {
   dependentRepositories: DependentRepository[];
@@ -81,10 +81,17 @@ export const DependentRepositories = component$<DependentRepositoriesProps>(
                       </div>
                       
                       {repo.targetDependency.outOfDate ? (
-                        <span class="ml-2 flex items-center text-red-400">
-                          <LuAlertCircle class="w-4 h-4 mr-1" />
-                          <span class="text-xs">Outdated</span>
-                        </span>
+                        repo.hasOpenDesignSystemPullRequests ? (
+                          <span class="ml-2 flex items-center text-yellow-400">
+                            <LuClock class="w-4 h-4 mr-1" />
+                            <span class="text-xs">Update Pending</span>
+                          </span>
+                        ) : (
+                          <span class="ml-2 flex items-center text-red-400">
+                            <LuAlertCircle class="w-4 h-4 mr-1" />
+                            <span class="text-xs">Outdated</span>
+                          </span>
+                        )
                       ) : (
                         <span class="ml-2 flex items-center text-green-400">
                           <LuCheckCircle class="w-4 h-4 mr-1" />
@@ -100,7 +107,7 @@ export const DependentRepositories = component$<DependentRepositoriesProps>(
                       <span class="text-gray-500 font-mono">{repo.file_path}</span>
                     </div>
                     
-                    {repo.targetDependency.outOfDate && (
+                    {repo.targetDependency.outOfDate && !repo.hasOpenDesignSystemPullRequests && (
                       <button
                         class="flex items-center bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 px-3 py-2 rounded-lg text-sm transition-colors duration-200 border border-purple-600/30 cursor-pointer"
                         onClick$={() => createWorkflowDispatchAction.submit({
